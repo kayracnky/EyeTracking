@@ -21,20 +21,16 @@ public class EyeTrackingReceiver : MonoBehaviour
     [Header("UDP Settings")]
     private int port = 5053;
     
-    // Grid pozisyon sistemi
     private int currentRow = 2; 
     private int currentCol = 0;
     
-
     private Vector2[,] gridPositions = new Vector2[3, 3];
     
-
     private UdpClient udpClient;
     private string lastReceivedMessage = "Waiting for data...";
     private string currentGazeDirection = "CENTER";
     private bool isCurrentlyBlinking = false;
     
-
     private float lastMoveTime = 0f;
     private bool isBlinking = false;
     private float blinkStartTime = 0f;
@@ -51,7 +47,6 @@ public class EyeTrackingReceiver : MonoBehaviour
     
     void InitializeGrid()
     {
-
         float startX = -430f; 
         float startY = 280f;
         
@@ -84,11 +79,11 @@ public class EyeTrackingReceiver : MonoBehaviour
         {
             udpClient = new UdpClient(port);
             udpClient.BeginReceive(new System.AsyncCallback(OnDataReceived), null);
-            Debug.Log($"UDP dinleme başladı. Port: {port}");
+            Debug.Log($"UDP listening has started. Port: {port}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"UDP başlatma hatası: {e.Message}");
+            Debug.LogError($"UDP error: {e.Message}");
         }
     }
     
@@ -102,10 +97,8 @@ public class EyeTrackingReceiver : MonoBehaviour
             
             lastReceivedMessage = receivedData;
             
-            // Gaze direction ve blink durumu parse et
             if (receivedData.Contains("GAZE:") && receivedData.Contains("BLINK:"))
             {
-                // Format: "GAZE:LEFT,BLINK:true,EAR:0.25"
                 string[] parts = receivedData.Split(',');
                 
                 foreach (string part in parts)
@@ -123,12 +116,10 @@ public class EyeTrackingReceiver : MonoBehaviour
             }
             else
             {
-                // Sadece gaze direction
                 currentGazeDirection = receivedData.Trim();
                 isCurrentlyBlinking = false;
             }
             
-            // Asenkron dinleme işlemine devam et
             udpClient.BeginReceive(new System.AsyncCallback(OnDataReceived), null);
         }
         catch (System.Exception e)
@@ -150,7 +141,6 @@ public class EyeTrackingReceiver : MonoBehaviour
     
     void ProcessGazeMovement()
     {
-        // Hareket cooldown kontrolü
         if (Time.time - lastMoveTime < movementCooldown)
             return;
             
